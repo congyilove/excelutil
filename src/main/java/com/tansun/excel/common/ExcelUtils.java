@@ -6,11 +6,23 @@ import org.apache.commons.codec.Charsets;
 
 import javax.servlet.http.HttpServletResponse;
 
+// 考虑带模板导出和无模板导出
+// 导出到web还是local
+// excel的版本
 public class ExcelUtils {
 
     public static void export(){
-        EasyExcel.write().withTemplate();
+    //    EasyExcel.write().withTemplate();
     }
+
+    public static void exportToWeb(HttpServletResponse response){
+
+    }
+
+    public static void exportToLocal(){
+
+    }
+
 
     /**
      * 将文件输出到浏览器的公共配置
