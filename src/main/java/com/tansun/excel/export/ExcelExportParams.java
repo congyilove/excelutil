@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.OutputStream;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 @Setter
@@ -35,7 +36,7 @@ public class ExcelExportParams<T> {
     // 分页处理
     private Supplier supplierData;
     // 总数据量
-    private Supplier supplierCount;
+    private IntSupplier supplierCount;
 
     public ExcelExportParams() {
 
