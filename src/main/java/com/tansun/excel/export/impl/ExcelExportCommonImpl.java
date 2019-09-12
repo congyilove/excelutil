@@ -26,6 +26,9 @@ public class ExcelExportCommonImpl implements IExcelExportService {
     private <T> void execute(ExcelExportParams<T> params) {
         ExcelTypeEnum excelTypeEnum = params.getExcelTypeEnum();
 
+        int sheetCount = 0; // sheet数
+        int pDealCount = 0; // 中间sheet查询次数
+        int lDealCount = 0; // 最后一个sheet查询次数
         int perSheetRows = params.getPerSheetRows();
         int perDealRows = params.getPerDealRows();
         int totalRows = params.getSupplierCount().getAsInt();
@@ -38,39 +41,35 @@ public class ExcelExportCommonImpl implements IExcelExportService {
         // 一个sheet内
         if(totalRows <= perDealRows){
             // 一次处理完成
-
+            sheetCount = 1;
+            pDealCount = lDealCount = 1;
             List<T> dataList = (List<T>) params.getSupplierData().get();
             excelWriter.write(dataList, ws);
         }
         // 一个sheet内，处理多次
         if(totalRows <= perSheetRows){
-            int count = totalRows%perDealRows == 0 ? totalRows/perDealRows : totalRows/perDealRows + 1;
-
+            sheetCount = 1;
+            pDealCount = lDealCount = totalRows%perDealRows == 0 ? totalRows/perDealRows : totalRows/perDealRows + 1;
         }
 
         // 多个sheet
-        // sheet数，要求每个sheet必须处理perSheetRows
-        int tmpCount = totalRows%perSheetRows;
-        int sheetCount = tmpCount == 0 ? totalRows/perSheetRows : totalRows/perSheetRows + 1;
         // 单sheet处理次数
-        int pDealCount = perSheetRows/perDealRows;
-        // 单sheet内，最后处理的偏移量
-        int pOffset = perSheetRows%perDealRows;
+        // 中间sheet处理次数
+        pDealCount = perSheetRows%perDealRows == 0 ? perSheetRows/perDealRows : perSheetRows/perDealRows + 1;
+        // 中间sheet,单sheet内，取余数，保证前面sheet数据都等于pSheetRows
+        int pLeft = perSheetRows%perDealRows;
 
+        // 用于计算sheet数，要求每个sheet必须处理perSheetRows
+        int tmpCount = totalRows%perSheetRows;
         // 最后一个sheet
-        int lDealCount = 0;
-        int lOffset = 0;
         if(tmpCount == 0){
             lDealCount = pDealCount;
-            lOffset = pOffset;
+            sheetCount = totalRows/perSheetRows;
         } else {
-            if(tmpCount%perDealRows == 0) {
-                lDealCount = tmpCount/perDealRows;
-                lOffset = 0;
-            }else{
-                lDealCount = tmpCount/perDealRows + 1;
-                lOffset = tmpCount%perDealRows;
-            }
+            lDealCount = tmpCount%perDealRows == 0 ?
+                tmpCount/perDealRows :
+                tmpCount/perDealRows + 1;
+            sheetCount = totalRows/perSheetRows + 1;
         }
 
 
