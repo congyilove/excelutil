@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.OutputStream;
+import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -35,6 +37,8 @@ public class ExcelExportParams<T> {
 
     // 分页处理
     private Supplier supplierData;
+    // 分页处理
+    private BiFunction<Integer, Integer, List<T>> functionData;
     // 总数据量
     private IntSupplier supplierCount;
 

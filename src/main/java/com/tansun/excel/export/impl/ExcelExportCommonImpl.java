@@ -4,7 +4,6 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
-import com.google.common.base.Preconditions;
 import com.tansun.excel.export.ExcelExportParams;
 import com.tansun.excel.export.IExcelExportService;
 
@@ -55,9 +54,10 @@ public class ExcelExportCommonImpl implements IExcelExportService {
         // 多个sheet
         // 单sheet处理次数
         // 中间sheet处理次数
-        pDealCount = perSheetRows%perDealRows == 0 ? perSheetRows/perDealRows : perSheetRows/perDealRows + 1;
+        //pDealCount = perSheetRows%perDealRows == 0 ? perSheetRows/perDealRows : perSheetRows/perDealRows + 1;
         // 中间sheet,单sheet内，取余数，保证前面sheet数据都等于pSheetRows
-        int pLeft = perSheetRows%perDealRows;
+        //int pLeft = perSheetRows%perDealRows;
+        pDealCount = perSheetRows/perDealRows; // 必须保证可以整除
 
         // 用于计算sheet数，要求每个sheet必须处理perSheetRows
         int tmpCount = totalRows%perSheetRows;
@@ -70,6 +70,22 @@ public class ExcelExportCommonImpl implements IExcelExportService {
                 tmpCount/perDealRows :
                 tmpCount/perDealRows + 1;
             sheetCount = totalRows/perSheetRows + 1;
+        }
+
+        for (int sheetIndex = 0; sheetIndex < sheetCount; sheetIndex++) {
+
+            if(sheetIndex < sheetCount - 1){
+                for (int pDealIndex = 0; pDealIndex < pDealCount; pDealIndex++){
+
+                    List<T> dataLists = params.getFunctionData().apply(sheetIndex * pDealCount + pDealIndex, pDealCount);
+                    
+                    excelWriter.write(dataLists, ws);
+
+                }
+            } else{
+                // 最后一个sheet
+
+            }
         }
 
 
