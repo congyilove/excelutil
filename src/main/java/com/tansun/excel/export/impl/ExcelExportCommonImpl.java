@@ -6,11 +6,13 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.tansun.excel.export.ExcelExportParams;
 import com.tansun.excel.export.IExcelExportService;
+import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
 import java.util.List;
 
-public class ExcelExportCommonImpl implements IExcelExportService {
+@Service
+public class ExcelExportCommonImpl<T>  implements IExcelExportService {
 
     @Override
     public void export(ExcelExportParams params) {
@@ -22,7 +24,7 @@ public class ExcelExportCommonImpl implements IExcelExportService {
         //Preconditions.checkArgument();
     }
 
-    private <T> void execute(ExcelExportParams<T> params) {
+    private void execute(ExcelExportParams<T> params) {
         ExcelTypeEnum excelTypeEnum = params.getExcelTypeEnum();
 
         int sheetCount = 0; // sheet数
@@ -73,21 +75,26 @@ public class ExcelExportCommonImpl implements IExcelExportService {
         }
 
         for (int sheetIndex = 0; sheetIndex < sheetCount; sheetIndex++) {
-
+            ws = EasyExcel.writerSheet(params.getSheetName() + sheetIndex).build();
             if(sheetIndex < sheetCount - 1){
-                for (int pDealIndex = 0; pDealIndex < pDealCount; pDealIndex++){
-
-                    List<T> dataLists = params.getFunctionData().apply(sheetIndex * pDealCount + pDealIndex, pDealCount);
-                    
-                    excelWriter.write(dataLists, ws);
-
-                }
+                export(params, sheetIndex, sheetCount, pDealCount, excelWriter, ws);
             } else{
                 // 最后一个sheet
-
+                export(params, sheetIndex, sheetCount, lDealCount, excelWriter, ws);
             }
         }
 
 
     }
+
+    private void export(ExcelExportParams<T> params, Integer sheetIndex, Integer sheetCount, Integer dealCount, ExcelWriter ew, WriteSheet ws){
+        for (int dealIndex = 0; dealIndex < dealCount; dealIndex++){
+
+            List<T> dataLists = params.getFunctionData().apply(sheetIndex * dealCount + dealIndex, dealCount);
+
+            ew.write(dataLists, ws);
+
+        }
+    }
+
 }
