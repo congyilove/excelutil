@@ -4,12 +4,17 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.tansun.excel.common.ExcelConstants;
 import com.tansun.excel.export.ExcelExportParams;
 import com.tansun.excel.export.IExcelExportService;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import static com.alibaba.excel.support.ExcelTypeEnum.*;
 
 @Service
 public class ExcelExportCommonImpl<T>  implements IExcelExportService {
@@ -22,6 +27,32 @@ public class ExcelExportCommonImpl<T>  implements IExcelExportService {
 
     private void check(ExcelExportParams params){
         //Preconditions.checkArgument();
+        int perDealRows = params.getPerDealRows();
+        int perSheetRows = params.getPerSheetRows();
+        switch (params.getExcelTypeEnum()){
+            case XLSX:
+                if(perDealRows == 0){
+                    perDealRows = ExcelConstants.PER_DEAL_ROWS_2007;
+                }
+                if(perSheetRows == 0){
+                    perSheetRows= ExcelConstants.SHEET_MAX_ROWS_2007;
+                }
+                break;
+            case XLS:
+                if(perDealRows == 0){
+                    perDealRows = ExcelConstants.PER_DEAL_ROWS_2003;
+                }
+                if(perSheetRows == 0){
+                    perSheetRows= ExcelConstants.SHEET_MAX_ROWS_2003;
+                }
+                break;
+                default:
+                    break;
+        }
+
+
+        params.setPerDealRows(perDealRows);
+        params.setPerSheetRows(perSheetRows);
     }
 
     private void execute(ExcelExportParams<T> params) {
@@ -30,12 +61,16 @@ public class ExcelExportCommonImpl<T>  implements IExcelExportService {
         int sheetCount = 0; // sheet数
         int pDealCount = 0; // 中间sheet查询次数
         int lDealCount = 0; // 最后一个sheet查询次数
-        int perSheetRows = params.getPerSheetRows();
-        int perDealRows = params.getPerDealRows();
-        int totalRows = params.getSupplierCount().getAsInt();
+        int perSheetRows = params.getPerSheetRows() ;
+        int perDealRows  = params.getPerDealRows();
+        int totalRows    = (int)params.getSupplierCount().getAsLong();
 
         OutputStream outputStream = params.getOutputStream();
-
+        File file = new File("d:/tmp/" + params.getName());
+        if(!file.exists()){
+            //file =
+        }
+//outputStream = new FileOutputStream();
         ExcelWriter excelWriter = EasyExcel.write(outputStream).excelType(excelTypeEnum).build();
         WriteSheet ws = EasyExcel.writerSheet(params.getSheetName()).build();
 

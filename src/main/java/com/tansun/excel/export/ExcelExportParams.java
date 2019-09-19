@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 @Setter
@@ -40,11 +41,7 @@ public class ExcelExportParams<T> {
     // 分页处理
     private BiFunction<Integer, Integer, List<T>> functionData;
     // 总数据量
-    private IntSupplier supplierCount;
-
-    public ExcelExportParams() {
-
-    }
+    private LongSupplier supplierCount;
 
 
 }
