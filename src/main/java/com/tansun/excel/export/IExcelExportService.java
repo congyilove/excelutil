@@ -1,7 +1,7 @@
 package com.tansun.excel.export;
 
-public interface IExcelExportService {
+public interface IExcelExportService<T> {
 
-    void export(ExcelExportParams params);
+    void export(ExcelExportParams<T> params);
 
 }

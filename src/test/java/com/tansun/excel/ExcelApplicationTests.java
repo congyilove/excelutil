@@ -1,10 +1,6 @@
 package com.tansun.excel;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.write.builder.ExcelWriterBuilder;
-import com.alibaba.excel.write.metadata.WriteSheet;
 import com.tansun.excel.export.ExcelExportParams;
 import com.tansun.excel.export.IExcelExportService;
 import com.tansun.excel.model.ExcelTestModel;
@@ -18,11 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -42,7 +36,11 @@ public class ExcelApplicationTests {
     @Test
     public void test() {
 
-        try(OutputStream outputStream = new FileOutputStream(new File("d:\\tmp\\"));){
+        File file = new File("d:\\tmp.xlsx");
+        if(file.exists()){
+            file.delete();
+        }
+        try(OutputStream outputStream = new FileOutputStream(file);){
 
             // count
             LongSupplier sp = () -> personInfoRepository.count();
@@ -54,8 +52,8 @@ public class ExcelApplicationTests {
                     .<ExcelTestModel>builder()
                     .excelTypeEnum(ExcelTypeEnum.XLSX)
                     .name("导出测试")
-                    //.perDealRows(10)
-                    //.perSheetRows(20)
+//                    .perDealRows(10)
+//                    .perSheetRows(20)
                     .sheetName("infomation")
                     .supplierCount(sp)
                     .functionData(bf)

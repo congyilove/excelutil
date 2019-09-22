@@ -8,9 +8,7 @@ import lombok.Setter;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 
 @Setter
 @Getter
@@ -36,8 +34,6 @@ public class ExcelExportParams<T> {
     // 每个sheet存放数据条数
     private int perSheetRows;
 
-    // 分页处理
-    private Supplier supplierData;
     // 分页处理
     private BiFunction<Integer, Integer, List<T>> functionData;
     // 总数据量
